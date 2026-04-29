@@ -297,7 +297,7 @@ function render() {
     <div class="card">
       <h2>Ditt namn</h2>
       <div class="name-row">
-        <input type="text" id="voterName" placeholder="Förnamn Efternamn" value="${esc(myName)}"
+        <input type="text" id="voterName" placeholder="Namn" value="${esc(myName)}"
           oninput="myName=this.value" onblur="onNameBlur()" maxlength="60">
       </div>
       ${existingVote ? `<div style="color:var(--muted);font-size:0.82rem;margin-top:8px">Du har svarat tidigare — dina val är förifyllda. Ändra och skicka igen för att uppdatera.</div>` : ""}
