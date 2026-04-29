@@ -15,9 +15,7 @@
     --accent: #c9462a;
     --accent-light: #f5e8e4;
     --border: #ddd8ce;
-    --gold: #b8860b;
-    --silver: #6e7f8a;
-    --bronze: #8b5e3c;
+    --green: #2a7a4a;
     --radius: 10px;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -29,7 +27,7 @@
     min-height: 100vh;
     padding: 48px 16px 80px;
   }
-  .wrap { max-width: 660px; margin: 0 auto; }
+  .wrap { max-width: 620px; margin: 0 auto; }
 
   header { margin-bottom: 40px; }
   .logo {
@@ -65,10 +63,8 @@
     margin-bottom: 18px;
   }
 
-  /* Namn */
-  .name-row { display: flex; gap: 10px; align-items: flex-end; }
   .name-row input {
-    flex: 1;
+    width: 100%;
     background: var(--bg);
     border: 1px solid var(--border);
     border-radius: 6px;
@@ -81,54 +77,32 @@
   }
   .name-row input:focus { border-color: var(--accent); }
 
-  /* Röstningstabell */
-  .vote-table { width: 100%; border-collapse: collapse; }
-  .vote-table th {
-    font-size: 0.75rem;
-    font-weight: 500;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--muted);
-    padding: 0 8px 12px;
-    text-align: center;
-  }
-  .vote-table th.date-th { text-align: left; padding-left: 0; }
-  .vote-table td { padding: 8px; border-top: 1px solid var(--border); vertical-align: middle; }
-  .vote-table td.date-cell { font-size: 0.92rem; padding-left: 0; }
-  .date-label { font-weight: 400; }
-  .date-range { font-size: 0.78rem; color: var(--muted); }
-
-  .rank-cell { text-align: center; }
-  .rank-btn {
-    width: 36px; height: 36px;
-    border-radius: 50%;
-    border: 2px solid var(--border);
-    background: var(--bg);
-    cursor: pointer;
-    font-size: 0.8rem;
-    font-weight: 500;
-    color: var(--muted);
-    transition: all 0.15s;
-    font-family: 'DM Sans', sans-serif;
-    display: inline-flex;
+  .date-check-row {
+    display: flex;
     align-items: center;
-    justify-content: center;
+    gap: 14px;
+    padding: 11px 0;
+    border-top: 1px solid var(--border);
+    cursor: pointer;
+    user-select: none;
   }
-  .rank-btn:hover { border-color: var(--accent); color: var(--accent); }
-  .rank-btn.selected-1 { background: var(--gold); border-color: var(--gold); color: #fff; }
-  .rank-btn.selected-2 { background: var(--silver); border-color: var(--silver); color: #fff; }
-  .rank-btn.selected-3 { background: var(--bronze); border-color: var(--bronze); color: #fff; }
-
-  .legend {
-    display: flex; gap: 16px;
-    font-size: 0.78rem;
-    color: var(--muted);
-    margin-bottom: 18px;
-    flex-wrap: wrap;
+  .check-box {
+    width: 24px; height: 24px;
+    border: 2px solid var(--border);
+    border-radius: 5px;
+    background: var(--bg);
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+    font-size: 14px;
+    color: #fff;
   }
-  .legend-dot {
-    width: 12px; height: 12px; border-radius: 50%; display: inline-block; margin-right: 5px; vertical-align: middle;
+  .date-check-row.checked .check-box {
+    background: var(--green);
+    border-color: var(--green);
   }
+  .date-check-row:hover .check-box { border-color: var(--green); }
+  .check-label { font-size: 0.92rem; }
 
   .submit-btn {
     width: 100%;
@@ -147,9 +121,8 @@
   .submit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
   .error { color: var(--accent); font-size: 0.85rem; margin-top: 10px; }
-  .success { color: #2a7a4a; font-size: 0.88rem; margin-top: 10px; font-weight: 500; }
+  .success-msg { color: var(--green); font-size: 0.88rem; margin-bottom: 20px; font-weight: 500; }
 
-  /* Resultat */
   .results-card {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -163,7 +136,6 @@
     font-weight: 400;
     margin-bottom: 20px;
   }
-
   .result-row {
     display: flex;
     align-items: center;
@@ -175,13 +147,12 @@
   .result-score {
     font-family: 'DM Serif Display', serif;
     font-size: 1.1rem;
-    min-width: 40px;
+    min-width: 36px;
     text-align: right;
     color: var(--accent);
   }
   .score-bar-wrap {
-    width: 120px;
-    height: 6px;
+    width: 120px; height: 6px;
     background: var(--border);
     border-radius: 99px;
     overflow: hidden;
@@ -195,29 +166,34 @@
 
   .voters-section { margin-top: 24px; }
   .voters-section h3 {
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     font-weight: 500;
     letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--muted);
-    margin-bottom: 12px;
+    margin-bottom: 10px;
   }
-  .voter-row { font-size: 0.85rem; padding: 6px 0; border-top: 1px solid var(--border); display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .voter-row {
+    font-size: 0.85rem;
+    padding: 7px 0;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
   .voter-name { font-weight: 400; min-width: 120px; }
-  .voter-choices { display: flex; gap: 6px; flex-wrap: wrap; }
-  .choice-tag {
+  .voter-dates { display: flex; gap: 5px; flex-wrap: wrap; }
+  .date-tag {
     font-size: 0.72rem;
     padding: 2px 8px;
     border-radius: 99px;
-    border: 1px solid var(--border);
-    color: var(--muted);
+    background: var(--green);
+    color: #fff;
   }
-  .choice-tag.r1 { background: var(--gold); color: #fff; border-color: var(--gold); }
-  .choice-tag.r2 { background: var(--silver); color: #fff; border-color: var(--silver); }
-  .choice-tag.r3 { background: var(--bronze); color: #fff; border-color: var(--bronze); }
 
   .loading { color: var(--muted); font-size: 0.9rem; padding: 40px 0; text-align: center; }
-  .not-found { color: var(--accent); text-align: center; padding: 60px 0; font-size: 1rem; }
+  .not-found { color: var(--accent); text-align: center; padding: 60px 0; }
 
   @media (max-width: 480px) {
     .card, .results-card { padding: 20px 18px; }
@@ -228,21 +204,20 @@
 <body>
 <div class="wrap">
   <header>
-    <a href="index.html" class="logo">Träff<span>a</span></a>
+    <a href="https://joreimer1.github.io/traffa/" class="logo">Träff<span>a</span></a>
   </header>
-
   <div id="app"><div class="loading">Laddar omröstning…</div></div>
 </div>
 
 <script>
-const WORKER = "https://traffa.johan-oestberg.workers.dev"; // ← byt ut
+const WORKER = "https://traffa.johan-oestberg.workers.dev";
 
 const params = new URLSearchParams(location.search);
 const pollId = params.get("id");
 
 let poll = null;
 let votes = [];
-let choices = {}; // dateIndex -> rank (1/2/3)
+let checked = {};
 let hasVoted = false;
 let myName = "";
 
@@ -252,32 +227,29 @@ function formatDate(d) {
   return `${parseInt(day)} ${months[parseInt(m)-1]} ${y}`;
 }
 
-function formatDateEntry(entry) {
-  if (entry.to) return `${formatDate(entry.from)} – ${formatDate(entry.to)}`;
-  return formatDate(entry.from);
+function formatDateEntry(e) {
+  return e.to ? `${formatDate(e.from)} – ${formatDate(e.to)}` : formatDate(e.from);
 }
 
 function scoreOf(votes, idx) {
-  // 1:a val = 3p, 2:a val = 2p, 3:e val = 1p
-  let score = 0;
-  for (const v of votes) {
-    const rank = v.choices[idx];
-    if (rank === 1) score += 3;
-    else if (rank === 2) score += 2;
-    else if (rank === 3) score += 1;
-  }
-  return score;
+  return votes.filter(v => v.choices[idx] === 1).length;
+}
+
+function esc(s) {
+  return String(s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+function toggleCheck(idx) {
+  checked[idx] = !checked[idx];
+  render();
 }
 
 function render() {
   const app = document.getElementById("app");
-
   if (!poll) { app.innerHTML = '<div class="not-found">Omröstningen hittades inte.</div>'; return; }
 
   const scores = poll.dates.map((_, i) => scoreOf(votes, i));
   const maxScore = Math.max(...scores, 1);
-
-  // Kolla om nuvarande namn redan röstat
   const alreadyVoted = myName && votes.some(v => v.voter_name.toLowerCase() === myName.toLowerCase());
 
   app.innerHTML = `
@@ -295,89 +267,57 @@ function render() {
     </div>
 
     <div class="card">
-      <h2>Dina val</h2>
-      <div class="legend">
-        <span><span class="legend-dot" style="background:var(--gold)"></span>1:a val (3p)</span>
-        <span><span class="legend-dot" style="background:var(--silver)"></span>2:a val (2p)</span>
-        <span><span class="legend-dot" style="background:var(--bronze)"></span>3:e val (1p)</span>
-      </div>
-      <table class="vote-table">
-        <thead>
-          <tr>
-            <th class="date-th">Tillfälle</th>
-            <th>1:a</th><th>2:a</th><th>3:e</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${poll.dates.map((d, i) => `
-          <tr>
-            <td class="date-cell"><span class="date-label">${formatDateEntry(d)}</span></td>
-            ${[1,2,3].map(r => `
-            <td class="rank-cell">
-              <button class="rank-btn ${choices[i]===r ? `selected-${r}` : ''}"
-                onclick="toggleChoice(${i},${r})">${r}</button>
-            </td>`).join("")}
-          </tr>`).join("")}
-        </tbody>
-      </table>
-      ${alreadyVoted ? `<div class="error" style="margin-top:14px">Du har redan röstat som "${esc(myName)}".</div>` : ""}
+      <h2>Vilka datum passar dig?</h2>
+      ${poll.dates.map((d, i) => `
+      <div class="date-check-row ${checked[i] ? 'checked' : ''}" onclick="toggleCheck(${i})">
+        <div class="check-box">${checked[i] ? '✓' : ''}</div>
+        <span class="check-label">${formatDateEntry(d)}</span>
+      </div>`).join("")}
+      ${alreadyVoted ? `<div class="error" style="margin-top:14px">Du har redan svarat som "${esc(myName)}".</div>` : ""}
     </div>
 
-    <button class="submit-btn" onclick="submitVote()">Skicka min röst →</button>
+    <button class="submit-btn" onclick="submitVote()">Skicka svar →</button>
     <div id="voteMsg"></div>
-    ` : `<div class="success" style="margin-bottom:20px">✓ Din röst är registrerad!</div>`}
+    ` : `<div class="success-msg">✓ Ditt svar är registrerat!</div>`}
 
     <div class="results-card">
-      <h2>Resultat ${votes.length > 0 ? `(${votes.length} ${votes.length===1?"röst":"röster"})` : ""}</h2>
-      ${votes.length === 0 ? `<div style="color:var(--muted);font-size:0.88rem">Inga röster ännu.</div>` : ""}
+      <h2>Resultat ${votes.length > 0 ? `(${votes.length} ${votes.length===1?"svar":"svar"})` : ""}</h2>
+      ${votes.length === 0 ? `<div style="color:var(--muted);font-size:0.88rem">Inga svar ännu.</div>` : ""}
       ${poll.dates.map((d, i) => `
       <div class="result-row">
         <div class="result-date">${formatDateEntry(d)}</div>
         <div class="score-bar-wrap"><div class="score-bar" style="width:${Math.round(scores[i]/maxScore*100)}%"></div></div>
-        <div class="result-score">${scores[i]}p</div>
+        <div class="result-score">${scores[i]}</div>
       </div>`).join("")}
 
       ${votes.length > 0 ? `
       <div class="voters-section">
-        <h3>Röster</h3>
-        ${votes.map(v => `
-        <div class="voter-row">
-          <span class="voter-name">${esc(v.voter_name)}</span>
-          <div class="voter-choices">
-            ${poll.dates.map((d, i) => {
-              const r = v.choices[i];
-              if (!r) return "";
-              return `<span class="choice-tag r${r}">${formatDateEntry(d)}: ${r}:a</span>`;
-            }).join("")}
-          </div>
-        </div>`).join("")}
+        <h3>Svar</h3>
+        ${votes.map(v => {
+          const okDates = poll.dates.filter((_, i) => v.choices[i] === 1);
+          return `<div class="voter-row">
+            <span class="voter-name">${esc(v.voter_name)}</span>
+            <div class="voter-dates">
+              ${okDates.length === 0
+                ? `<span style="color:var(--muted);font-size:0.78rem">Inga datum passar</span>`
+                : okDates.map(d => `<span class="date-tag">${formatDateEntry(d)}</span>`).join("")}
+            </div>
+          </div>`;
+        }).join("")}
       </div>` : ""}
     </div>
   `;
-}
-
-function esc(s) {
-  return String(s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
-}
-
-function toggleChoice(idx, rank) {
-  if (choices[idx] === rank) {
-    delete choices[idx];
-  } else {
-    // Om rang redan används på annan rad, ta bort den
-    for (const k in choices) {
-      if (choices[k] === rank) delete choices[k];
-    }
-    choices[idx] = rank;
-  }
-  render();
 }
 
 async function submitVote() {
   const name = (document.getElementById("voterName")?.value || "").trim();
   const msg = document.getElementById("voteMsg");
   if (!name) { msg.className = "error"; msg.textContent = "Ange ditt namn."; return; }
-  if (Object.keys(choices).length === 0) { msg.className = "error"; msg.textContent = "Välj minst ett tillfälle."; return; }
+
+  const choicesOut = {};
+  for (let i = 0; i < poll.dates.length; i++) {
+    if (checked[i]) choicesOut[i] = 1;
+  }
 
   const btn = document.querySelector(".submit-btn");
   btn.disabled = true;
@@ -387,10 +327,10 @@ async function submitVote() {
     const res = await fetch(`${WORKER}/vote`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ poll_id: pollId, voter_name: name, choices }),
+      body: JSON.stringify({ poll_id: pollId, voter_name: name, choices: choicesOut }),
     });
     const data = await res.json();
-    if (res.status === 409) { msg.className = "error"; msg.textContent = "Du har redan röstat med det namnet."; btn.disabled=false; btn.textContent="Skicka min röst →"; return; }
+    if (res.status === 409) { msg.className = "error"; msg.textContent = "Du har redan svarat med det namnet."; btn.disabled=false; btn.textContent="Skicka svar →"; return; }
     if (!res.ok) throw new Error(data.error || "Något gick fel");
     hasVoted = true;
     myName = name;
@@ -399,7 +339,7 @@ async function submitVote() {
     msg.className = "error";
     msg.textContent = e.message;
     btn.disabled = false;
-    btn.textContent = "Skicka min röst →";
+    btn.textContent = "Skicka svar →";
   }
 }
 
@@ -412,7 +352,6 @@ async function loadPoll() {
     poll = data.poll;
     votes = data.votes;
     render();
-    // Uppdatera var 30s
     setTimeout(loadPoll, 30000);
   } catch {
     poll = null;
