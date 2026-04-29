@@ -119,6 +119,21 @@
   }
   .submit-btn:hover { opacity: 0.9; }
   .submit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .delete-btn {
+    width: 100%;
+    background: none;
+    color: var(--accent);
+    border: 1.5px solid var(--accent);
+    border-radius: 8px;
+    padding: 13px;
+    font-family: 'DM Serif Display', serif;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background 0.15s, color 0.15s;
+    letter-spacing: 0.3px;
+  }
+  .delete-btn:hover { background: var(--accent); color: #fff; }
 
   .error { color: var(--accent); font-size: 0.85rem; margin-top: 10px; }
   .success-msg { color: var(--green); font-size: 0.88rem; margin-bottom: 20px; font-weight: 500; }
@@ -282,7 +297,7 @@ function render() {
     <div class="card">
       <h2>Ditt namn</h2>
       <div class="name-row">
-        <input type="text" id="voterName" placeholder="Namn" value="${esc(myName)}"
+        <input type="text" id="voterName" placeholder="Förnamn Efternamn" value="${esc(myName)}"
           oninput="myName=this.value" onblur="onNameBlur()" maxlength="60">
       </div>
       ${existingVote ? `<div style="color:var(--muted);font-size:0.82rem;margin-top:8px">Du har svarat tidigare — dina val är förifyllda. Ändra och skicka igen för att uppdatera.</div>` : ""}
@@ -298,6 +313,7 @@ function render() {
     </div>
 
     <button class="submit-btn" onclick="submitVote()">${existingVote ? 'Uppdatera svar →' : 'Skicka svar →'}</button>
+    ${existingVote ? `<button class="delete-btn" onclick="deleteVote()">Ta bort mig</button>` : ''}
     <div id="voteMsg"></div>
     ` : `<div class="success-msg">✓ ${hasVoted === 'updated' ? 'Ditt svar är uppdaterat!' : 'Ditt svar är registrerat!'}</div>`}
 
@@ -360,6 +376,27 @@ async function submitVote() {
     msg.textContent = e.message;
     btn.disabled = false;
     btn.textContent = "Skicka svar →";
+  }
+}
+
+async function deleteVote() {
+  if (!confirm(`Ta bort "${myName}" från omröstningen?`)) return;
+  const msg = document.getElementById("voteMsg");
+  try {
+    const res = await fetch(`${WORKER}/vote`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ poll_id: pollId, voter_name: myName }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Något gick fel");
+    myName = "";
+    checked = {};
+    hasVoted = false;
+    await loadPoll();
+  } catch (e) {
+    msg.className = "error";
+    msg.textContent = e.message;
   }
 }
 
