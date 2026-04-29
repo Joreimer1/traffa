@@ -244,13 +244,33 @@ function toggleCheck(idx) {
   render();
 }
 
+function findExistingVote(name) {
+  return votes.find(v => v.voter_name.toLowerCase() === name.toLowerCase());
+}
+
+function onNameBlur() {
+  const name = document.getElementById("voterName")?.value.trim();
+  if (!name) return;
+  myName = name;
+  const existing = findExistingVote(name);
+  if (existing) {
+    // Fyll i befintliga val
+    checked = {};
+    for (const k in existing.choices) {
+      if (existing.choices[k] === 1) checked[k] = true;
+    }
+  }
+  render();
+  // Återfokusera fältet förblir inte kvar efter render
+}
+
 function render() {
   const app = document.getElementById("app");
   if (!poll) { app.innerHTML = '<div class="not-found">Omröstningen hittades inte.</div>'; return; }
 
   const scores = poll.dates.map((_, i) => scoreOf(votes, i));
   const maxScore = Math.max(...scores, 1);
-  const alreadyVoted = myName && votes.some(v => v.voter_name.toLowerCase() === myName.toLowerCase());
+  const existingVote = myName ? findExistingVote(myName) : null;
 
   app.innerHTML = `
     <div style="margin-bottom:32px">
@@ -262,8 +282,10 @@ function render() {
     <div class="card">
       <h2>Ditt namn</h2>
       <div class="name-row">
-        <input type="text" id="voterName" placeholder="Förnamn Efternamn" value="${esc(myName)}" oninput="myName=this.value" maxlength="60">
+        <input type="text" id="voterName" placeholder="Förnamn Efternamn" value="${esc(myName)}"
+          oninput="myName=this.value" onblur="onNameBlur()" maxlength="60">
       </div>
+      ${existingVote ? `<div style="color:var(--muted);font-size:0.82rem;margin-top:8px">Du har svarat tidigare — dina val är förifyllda. Ändra och skicka igen för att uppdatera.</div>` : ""}
     </div>
 
     <div class="card">
@@ -273,12 +295,11 @@ function render() {
         <div class="check-box">${checked[i] ? '✓' : ''}</div>
         <span class="check-label">${formatDateEntry(d)}</span>
       </div>`).join("")}
-      ${alreadyVoted ? `<div class="error" style="margin-top:14px">Du har redan svarat som "${esc(myName)}".</div>` : ""}
     </div>
 
-    <button class="submit-btn" onclick="submitVote()">Skicka svar →</button>
+    <button class="submit-btn" onclick="submitVote()">${existingVote ? 'Uppdatera svar →' : 'Skicka svar →'}</button>
     <div id="voteMsg"></div>
-    ` : `<div class="success-msg">✓ Ditt svar är registrerat!</div>`}
+    ` : `<div class="success-msg">✓ ${hasVoted === 'updated' ? 'Ditt svar är uppdaterat!' : 'Ditt svar är registrerat!'}</div>`}
 
     <div class="results-card">
       <h2>Resultat ${votes.length > 0 ? `(${votes.length} ${votes.length===1?"svar":"svar"})` : ""}</h2>
@@ -330,9 +351,8 @@ async function submitVote() {
       body: JSON.stringify({ poll_id: pollId, voter_name: name, choices: choicesOut }),
     });
     const data = await res.json();
-    if (res.status === 409) { msg.className = "error"; msg.textContent = "Du har redan svarat med det namnet."; btn.disabled=false; btn.textContent="Skicka svar →"; return; }
     if (!res.ok) throw new Error(data.error || "Något gick fel");
-    hasVoted = true;
+    hasVoted = data.updated ? 'updated' : true;
     myName = name;
     await loadPoll();
   } catch (e) {
@@ -361,5 +381,6 @@ async function loadPoll() {
 
 loadPoll();
 </script>
+
 </body>
 </html>
