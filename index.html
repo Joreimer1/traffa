@@ -256,22 +256,47 @@ const WORKER = "https://traffa.johan-oestberg.workers.dev"; // ← byt ut
 
 let rowCount = 0;
 
+function getLastDate() {
+  const rows = document.querySelectorAll(".date-row");
+  if (!rows.length) return "";
+  const last = rows[rows.length - 1];
+  const to = last.querySelector("input:nth-of-type(2)").value;
+  const from = last.querySelector("input:nth-of-type(1)").value;
+  return to || from || "";
+}
+
 function addRow() {
   if (rowCount >= 10) return;
   rowCount++;
   const id = `row${rowCount}`;
+  const prefill = getLastDate();
   const div = document.createElement("div");
   div.className = "date-row";
   div.id = id;
   div.innerHTML = `
-    <input type="date" id="${id}_from">
+    <input type="date" id="${id}_from" value="${prefill}">
     <span class="sep">–</span>
-    <input type="date" id="${id}_to" placeholder="(tom = enstaka dag)">
+    <input type="date" id="${id}_to">
     <button class="remove-btn" onclick="removeRow('${id}')">✕</button>
   `;
   document.getElementById("dateRows").appendChild(div);
   document.getElementById("addBtn").disabled = rowCount >= 10;
-  div.querySelector("input").focus();
+
+  const fromInput = document.getElementById(`${id}_from`);
+  const toInput = document.getElementById(`${id}_to`);
+
+  // När from ändras: sätt to till samma värde så datumväljaren öppnar rätt månad
+  fromInput.addEventListener("change", () => {
+    if (fromInput.value && !toInput.value) {
+      toInput.value = fromInput.value;
+    }
+    if (toInput.value && toInput.value < fromInput.value) {
+      toInput.value = fromInput.value;
+    }
+    toInput.min = fromInput.value;
+  });
+
+  fromInput.focus();
 }
 
 function removeRow(id) {
