@@ -314,7 +314,7 @@ async function createPoll() {
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || "Något gick fel");
-    const link = `${location.origin}/vote.html?id=${data.id}`;
+    const link = `${location.origin}/traffa/vote.html?id=${data.id}`;
     document.getElementById("resultLink").value = link;
     document.getElementById("resultCard").style.display = "block";
     document.getElementById("resultCard").scrollIntoView({ behavior: "smooth" });
